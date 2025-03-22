@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from typing import Any, Dict, List, Optional, Union
-import mcp
 
 from .client import obs_client
+from .server import mcp
 
 @mcp.tool()
 async def get_scene_item_list(scene_name: str) -> List[Dict[str, Any]]:

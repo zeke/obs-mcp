@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 from typing import Any, Dict, List, Optional
-import mcp
-
 from .client import obs_client
+from .server import mcp
 
 @mcp.tool()
 async def get_source_active(source_name: str) -> bool:
@@ -137,101 +136,3 @@ async def create_source_filter(source_name: str, filter_name: str, filter_kind: 
         payload["filterSettings"] = filter_settings
     
     await obs_client.send_request("CreateSourceFilter", payload)
-
-@mcp.tool()
-async def remove_source_filter(source_name: str, filter_name: str) -> None:
-    """
-    Removes a filter from a source.
-    
-    Args:
-        source_name: Name of the source to remove the filter from
-        filter_name: Name of the filter to remove
-    """
-    await obs_client.send_request("RemoveSourceFilter", {
-        "sourceName": source_name,
-        "filterName": filter_name
-    })
-
-@mcp.tool()
-async def set_source_filter_name(source_name: str, filter_name: str, new_filter_name: str) -> None:
-    """
-    Sets the name of a source filter (rename).
-    
-    Args:
-        source_name: Name of the source the filter is on
-        filter_name: Current name of the filter
-        new_filter_name: New name for the filter
-    """
-    await obs_client.send_request("SetSourceFilterName", {
-        "sourceName": source_name,
-        "filterName": filter_name,
-        "newFilterName": new_filter_name
-    })
-
-@mcp.tool()
-async def get_source_filter(source_name: str, filter_name: str) -> Dict[str, Any]:
-    """
-    Gets information about a source filter.
-    
-    Args:
-        source_name: Name of the source
-        filter_name: Name of the filter
-    
-    Returns:
-        Dict with filter information (enabled, index, kind, settings)
-    """
-    return await obs_client.send_request("GetSourceFilter", {
-        "sourceName": source_name,
-        "filterName": filter_name
-    })
-
-@mcp.tool()
-async def set_source_filter_index(source_name: str, filter_name: str, filter_index: int) -> None:
-    """
-    Sets the index position of a filter on a source.
-    
-    Args:
-        source_name: Name of the source the filter is on
-        filter_name: Name of the filter
-        filter_index: New index position of the filter
-    """
-    await obs_client.send_request("SetSourceFilterIndex", {
-        "sourceName": source_name,
-        "filterName": filter_name,
-        "filterIndex": filter_index
-    })
-
-@mcp.tool()
-async def set_source_filter_settings(source_name: str, filter_name: str, 
-                                    filter_settings: Dict[str, Any], overlay: bool = True) -> None:
-    """
-    Sets the settings of a source filter.
-    
-    Args:
-        source_name: Name of the source the filter is on
-        filter_name: Name of the filter to set the settings of
-        filter_settings: Object of settings to apply
-        overlay: True to overlay with existing settings, false to reset
-    """
-    await obs_client.send_request("SetSourceFilterSettings", {
-        "sourceName": source_name,
-        "filterName": filter_name,
-        "filterSettings": filter_settings,
-        "overlay": overlay
-    })
-
-@mcp.tool()
-async def set_source_filter_enabled(source_name: str, filter_name: str, filter_enabled: bool) -> None:
-    """
-    Sets the enable state of a source filter.
-    
-    Args:
-        source_name: Name of the source the filter is on
-        filter_name: Name of the filter
-        filter_enabled: New enable state of the filter
-    """
-    await obs_client.send_request("SetSourceFilterEnabled", {
-        "sourceName": source_name,
-        "filterName": filter_name,
-        "filterEnabled": filter_enabled
-    })

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from typing import Any, Dict, Optional
-import mcp
 
 from .client import obs_client
+from .server import mcp
 
 @mcp.tool()
 async def get_stream_status() -> Dict[str, Any]:

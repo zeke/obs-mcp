@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from typing import Any, Dict, List, Optional
-import mcp
 
 from .client import obs_client
+from .server import mcp
 
 @mcp.tool()
 async def get_transition_kind_list() -> List[str]:

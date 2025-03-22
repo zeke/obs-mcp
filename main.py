@@ -3,35 +3,50 @@
 import sys
 import os
 import logging
-import importlib.util
-import importlib.machinery
-from pathlib import Path
+import asyncio
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stdout)
     ]
 )
+logger = logging.getLogger("main")
 
-# Make sure we have the required environment variables
+# Check environment
 if not os.environ.get("OBS_WS_PASSWORD"):
-    print("WARNING: OBS_WS_PASSWORD environment variable is not set.")
-    print("You will need to set this to the WebSocket password configured in OBS.")
-    print("Example: export OBS_WS_PASSWORD='your_password_here'")
+    logger.warning("OBS_WS_PASSWORD environment variable is not set.")
+    logger.warning("You will need to set this to the WebSocket password configured in OBS.")
+    logger.warning("Example: export OBS_WS_PASSWORD='your_password_here'")
 
 # Run the server
 if __name__ == "__main__":
-    # This is to make sure the modules import correctly
-    import obs_mcp
+    logger.info("Starting OBS MCP Server")
     
-    # Import the server module
-    spec = importlib.util.spec_from_file_location("obs_mcp_server", 
-                                               Path(__file__).parent / "obs-mcp.py")
-    server_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(server_module)
-    
-    # Server is already configured to run when imported
-    # The last line of obs-mcp.py calls server.serve()
+    try:
+        # Import the shared event loop and server objects
+        from obs_mcp.server import loop, mcp, obs_client
+        
+        # Connect to OBS WebSocket server before starting
+        async def connect_to_obs():
+            try:
+                await obs_client.connect()
+                logger.info("Connected to OBS WebSocket server")
+            except Exception as e:
+                logger.error(f"Failed to connect to OBS WebSocket server: {e}")
+                logger.error("Make sure OBS is running and WebSocket server is enabled")
+                logger.error("Will try to connect on first request")
+        
+        # Connect to OBS first
+        connect_task = loop.create_task(connect_to_obs())
+        loop.run_until_complete(connect_task)
+        
+        # Start the server
+        logger.info("Starting MCP server...")
+        mcp.run(transport='stdio')
+        
+    except Exception as e:
+        logger.error(f"Error starting OBS MCP server: {e}")
+        sys.exit(1)

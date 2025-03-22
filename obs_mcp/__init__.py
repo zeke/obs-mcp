@@ -1,2 +1,2 @@
 # OBS MCP module
-from .client import obs_client
+from .server import mcp, obs_client
