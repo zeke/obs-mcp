@@ -23,20 +23,39 @@ npm run build
 
 ## Usage
 
-1. Make sure OBS Studio is running with WebSocket server enabled (Tools > WebSocket Server Settings)
+1. Make sure OBS Studio is running with WebSocket server enabled (Tools > WebSocket Server Settings). Note the password for the WS.
 2. Set the WebSocket password in environment variable (if needed):
 
 ```bash
 export OBS_WEBSOCKET_PASSWORD="your_password_here"
 ```
 
-3. Run the OBS MCP server:
+3. Run the OBS MCP server to see that it is able to build and connect:
 
 ```bash
-npm start
+npm run build
+npm run start
 ```
 
-4. Connect to the MCP server with an MCP client and use the provided tools to control OBS.
+4. Provision you Claude desktop with the MCP server settings:
+
+```json
+{
+  "mcpServers": {
+    "obs": {
+      "command": "node",
+      "args": [
+        "<obs-mcp_root>/build/index.js"
+      ],
+      "env": {
+        "OBS_WEBSOCKET_PASSWORD": "<password_from_obs>"
+      }
+    }
+  }
+}
+```
+
+5. Use Claude to control your OBS!
 
 ## Available Tools
 
@@ -57,8 +76,8 @@ The server provides tools organized by category:
 ## Requirements
 
 - Node.js 16+
-- OBS Studio 28+ with WebSocket server enabled
-- MCP client
+- OBS Studio 31+ with WebSocket server enabled
+- Claude desktop
 
 ## License
 

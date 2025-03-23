@@ -51,7 +51,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           sourceName,
           sceneItemEnabled: enabled
         });
-        
+
         return {
           content: [
             {
@@ -85,7 +85,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     async ({ sceneName, sceneItemId }) => {
       try {
         await client.sendRequest("RemoveSceneItem", { sceneName, sceneItemId });
-        
+
         return {
           content: [
             {
@@ -124,7 +124,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           sceneItemId,
           sceneItemEnabled: enabled
         });
-        
+
         return {
           content: [
             {
@@ -139,6 +139,39 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
             {
               type: "text",
               text: `Error setting scene item visibility: ${error instanceof Error ? error.message : String(error)}`
+            }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+
+  // GetSceneItemTransform tool
+  server.tool(
+    "obs-get-scene-item-transform",
+    "Get the position, rotation, scale, or crop of a scene item",
+    {
+      sceneName: z.string().describe("The scene the item is in"),
+      sceneItemId: z.number().describe("The ID of the scene item")
+    },
+    async ({ sceneName, sceneItemId }) => {
+      try {
+        const response = await client.sendRequest("GetSceneItemTransform", { sceneName, sceneItemId });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(response, null, 2)
+            }
+          ]
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error getting scene item transform: ${error instanceof Error ? error.message : String(error)}`
             }
           ],
           isError: true
@@ -167,41 +200,38 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     async (params) => {
       try {
         const { sceneName, sceneItemId, ...transformParams } = params;
-        
+
         // Build the transform object
         const sceneItemTransform: Record<string, any> = {};
-        
+
         if (transformParams.positionX !== undefined || transformParams.positionY !== undefined) {
-          sceneItemTransform.position = {};
-          if (transformParams.positionX !== undefined) sceneItemTransform.position.x = transformParams.positionX;
-          if (transformParams.positionY !== undefined) sceneItemTransform.position.y = transformParams.positionY;
+          sceneItemTransform.positionX = transformParams.positionX;
+          sceneItemTransform.positionY = transformParams.positionY;
         }
-        
+
         if (transformParams.rotation !== undefined) {
           sceneItemTransform.rotation = transformParams.rotation;
         }
-        
+
         if (transformParams.scaleX !== undefined || transformParams.scaleY !== undefined) {
-          sceneItemTransform.scale = {};
-          if (transformParams.scaleX !== undefined) sceneItemTransform.scale.x = transformParams.scaleX;
-          if (transformParams.scaleY !== undefined) sceneItemTransform.scale.y = transformParams.scaleY;
+          sceneItemTransform.scaleX = transformParams.scaleX;
+          sceneItemTransform.scaleY = transformParams.scaleY;
         }
-        
+
         if (transformParams.cropTop !== undefined || transformParams.cropBottom !== undefined ||
-            transformParams.cropLeft !== undefined || transformParams.cropRight !== undefined) {
-          sceneItemTransform.crop = {};
-          if (transformParams.cropTop !== undefined) sceneItemTransform.crop.top = transformParams.cropTop;
-          if (transformParams.cropBottom !== undefined) sceneItemTransform.crop.bottom = transformParams.cropBottom;
-          if (transformParams.cropLeft !== undefined) sceneItemTransform.crop.left = transformParams.cropLeft;
-          if (transformParams.cropRight !== undefined) sceneItemTransform.crop.right = transformParams.cropRight;
+          transformParams.cropLeft !== undefined || transformParams.cropRight !== undefined) {
+          if (transformParams.cropTop !== undefined) sceneItemTransform.cropTop = transformParams.cropTop;
+          if (transformParams.cropBottom !== undefined) sceneItemTransform.cropBottom = transformParams.cropBottom;
+          if (transformParams.cropLeft !== undefined) sceneItemTransform.cropLeft = transformParams.cropLeft;
+          if (transformParams.cropRight !== undefined) sceneItemTransform.cropRight = transformParams.cropRight;
         }
-        
+
         await client.sendRequest("SetSceneItemTransform", {
           sceneName,
           sceneItemId,
           sceneItemTransform
         });
-        
+
         return {
           content: [
             {
@@ -238,7 +268,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           sceneName,
           sourceName
         });
-        
+
         return {
           content: [
             {
