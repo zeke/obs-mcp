@@ -14,12 +14,6 @@ An MCP server for OBS Studio that provides tools to control OBS via the OBS WebS
   - Streaming and recording
   - Transitions
 
-## Installation
-
-```bash
-npm install
-npm run build
-```
 
 ## Usage
 
@@ -30,14 +24,35 @@ npm run build
 export OBS_WEBSOCKET_PASSWORD="your_password_here"
 ```
 
-3. Run the OBS MCP server to see that it is able to build and connect:
+3. Add the MCP server to Claude desktop with the MCP server settings:
+
+```json
+{
+  "mcpServers": {
+    "obs": {
+      "command": "npx",
+      "args": ["-y", "obs-mcp@latest"],
+      "env": {
+        "OBS_WEBSOCKET_PASSWORD": "<password_from_obs>"
+      }
+    }
+  }
+}
+```
+
+4. Use Claude to control your OBS!
+
+## Development
+
+If you want to run the server locally using the code in this git repo, you can do the following:
+
 
 ```bash
 npm run build
 npm run start
 ```
 
-4. Provision you Claude desktop with the MCP server settings:
+Then configure Claude desktop:
 
 ```json
 {
@@ -54,8 +69,6 @@ npm run start
   }
 }
 ```
-
-5. Use Claude to control your OBS!
 
 ## Available Tools
 
