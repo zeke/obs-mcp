@@ -92,6 +92,10 @@ The server provides tools organized by category:
 - OBS Studio 31+ with WebSocket server enabled
 - Claude desktop
 
+## Related Projects
+
+- [obsx](https://github.com/zeke/obsx) - A Python library and CLI for controlling OBS Studio with LLMs.
+
 ## License
 
 See the [LICENSE](LICENSE) file for details.
