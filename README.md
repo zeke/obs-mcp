@@ -94,6 +94,7 @@ The server provides tools organized by category:
 
 ## Related Projects
 
+- [obs-skill](https://github.com/zeke/obs-skill) - An agent skill for controlling OBS with natural language. Talks to obs-websocket directly, so it needs no MCP server.
 - [obsx](https://github.com/zeke/obsx) - A Python library and CLI for controlling OBS Studio with LLMs.
 
 ## License
